@@ -1,0 +1,92 @@
+#include <stdio.h>
+#include <string.h>
+
+#include <sys/ipc.h>
+#include <sys/msg.h>
+#define MAX 10
+
+
+struct mesg_buffer{ // to represent a msg that will be sent through msg queue
+ 
+ long mesg_type;
+ char mesg_txt[100]; // array
+}message;
+
+int main()
+{
+   key_t key;
+   int msgid;
+   
+   key = ftok("progfile",65); // randomly u r generating a key value
+   // file to key progfile is an arbitary name u can give any name
+   // 65 project identifier used t identify diff files with same name
+   
+   msgid = msgget(key,IPC_CREAT|0666); // create or open msg queue
+   
+   // for first tym
+   printf("Writing Data");
+   printf("Enter the message");
+   scanf("%s",message.mesg_txt); // it is an array no need to use &
+   
+   do{
+      printf("Enter the type of msg");
+      scanf("%ld",&message.mesg_type);
+     
+      msgsnd(msgid,&message,sizeof(message),0);
+     
+     
+      printf("Enter the message");
+      scanf("%s",message.mesg_txt);
+   
+   } while(strcmp(message.mesg_txt,"end")!=0);
+   
+   return 0;
+
+}
+
+
+// receiver side
+
+#include <stdio.h>
+#include <sys/ipc.h>
+#include <sys/msg.h>
+#include <string.h>
+#define MAX 10
+
+
+struct mesg_buffer {
+long mesg_type;
+char mesg_text[100];
+} message;
+
+
+int main()
+
+{
+key_t key;
+int msgid,type;
+char choice[10];
+
+key = ftok("progfile", 65);
+msgid = msgget(key, 0666 | IPC_CREAT);
+printf("Read Data : ");
+
+do{
+printf("Enter the type of the message: ");
+scanf("%d",&type);
+
+msgrcv(msgid, &message, sizeof(message),type, 0);// receive the message from message queue
+// which matches the type
+// received msg is stored in message structure
+
+printf("Message is : %s \n", message.mesg_text);
+
+printf("Do you want to continue: ");
+scanf("%s",choice);
+}
+while(strcmp(choice,"no")!=0);
+
+msgctl(msgid, IPC_RMID, NULL);
+// remove the msg queue IPC_RMID to release the system resources
+return 0;
+}

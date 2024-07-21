@@ -1,0 +1,94 @@
+#include <stdio.h>
+#include <limits.h>
+
+struct process{
+int at;
+int st;
+int status;
+int ft; // finish time
+
+}ready_list[10];
+
+int n;
+
+int dispatcher(int time) // has the logic of fcfs
+{
+   int i, bt = INT_MAX,index = -1; // bt for getting lowest burst time 
+   
+   for(i = 0;i<n;i++)
+   
+   {
+     if(ready_list[i].status != 1)
+     {
+      if(ready_list[i].at <= time)
+      {
+       if(ready_list[i].st <= bt)
+       {
+         bt = ready_list[i].st;
+         index = i;
+       }
+     
+      }
+     
+      }
+ 
+   
+   }
+
+
+ return index;
+
+}
+
+int main()
+{
+int pid,cur_time,i;
+
+printf("Enter the number of processes:");
+scanf("%d",&n);
+
+for(int i=0;i<n;i++)
+{
+ printf("Process %d\n",i+1);
+ printf("***********\n");
+ 
+ printf("Enter Arrival Time");
+ scanf("%d",&ready_list[i].at); // scanf so &
+ 
+ printf("Enter service time:");
+ scanf("%d",&ready_list[i].st);
+ 
+ ready_list[i].status = 0;
+
+}
+i = 0;
+cur_time = 0;
+
+while(i < n)
+{
+ pid = dispatcher(cur_time); // which has lower arrival time that index returns
+ 
+ while(pid == -1) // no process available to run at current time
+ {
+    cur_time++;   // inc the current time and execute
+    pid = dispatcher(cur_time);
+ 
+ }
+ 
+ ready_list[pid].ft = cur_time + ready_list[pid].st; // finish time
+ ready_list[pid].status = 1;
+ cur_time += ready_list[pid].st;
+ i++;
+}
+
+printf("Process\t Arrival Time\t Bursttime \t Finish Time \t TT\t  WT\n");
+
+for(i = 0;i<n;i++)
+{
+printf("%d\t\t%d\t\t%d\t\t%d\t\t%d\t\t%d\n",i+1,ready_list[i].at,ready_list[i].st,ready_list[i].ft,(ready_list[i].ft -ready_list[i].at),(ready_list[i].ft-ready_list[i].at)-ready_list[i].st);
+
+
+
+}
+
+}

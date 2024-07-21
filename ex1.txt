@@ -1,0 +1,39 @@
+// Creating a child using fork communication is pipe
+
+ #include <stdio.h>
+ #include <sys/types.h>
+ #include <unistd.h>
+ 
+ int main()
+ {
+    int p[2]; // pipe 0 - read 1 -write
+    int pid;
+   
+    char inbuff[10],outbuff[10];
+    // for contents inbuff and outbuff
+   
+    pipe(p); // communication built using pipe
+   
+    pid = fork();
+   
+    if(pid)  // pid > 0 parent process
+    {
+     printf("In parent process\n");
+     printf("Type the data to bee sent");
+     
+     scanf("%[^\n]s",outbuff); // %[^\n]s for reading more words
+     write(p[1],outbuff,10);
+     sleep(2);
+     printf("after sleep came to parent");
+    }
+   
+    else  // pid = 0 child proocess
+    {
+      sleep(5);
+      printf("in child process\n");
+      read(p[0],inbuff,10);
+      printf("The data  received by child is %s \n",inbuff); // %s imp here
+   
+    }
+    return 0;
+     }

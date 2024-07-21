@@ -1,0 +1,99 @@
+#include <stdio.h>
+
+struct process{  // this structure same
+int at;
+int st;
+int ft;
+int status;
+
+
+}ready[10];
+
+int n;
+
+int dispatcher(int time)  // dispather same as sjf
+{
+   int i,s_bt = 9999,index = -1;
+   
+   for(int i=0;i<n;i++)
+   {
+     if(ready[i].status != 1)
+     {
+     if(ready[i].at <= time)
+     {
+     if(ready[i].st < s_bt)
+     {
+       s_bt = ready[i].st;
+       index = i;
+     
+     }
+
+}
+
+}
+   }
+
+  return index;
+}
+
+int main()
+{
+  int i,cur_time,pid;
+  int rem = 0;
+   
+  printf("Enter the no.of process");
+  scanf("%d",&n);
+ 
+  for(i=0;i<n;i++)
+  {
+    printf("Process %d\n",i+1);
+    printf("**********\n");
+   
+    printf("Enter the arrival time");
+    scanf("%d",&ready[i].at);
+   
+    printf("Enter the burst time");
+    scanf("%d",&ready[i].st);
+   
+    ready[i].status = 0;
+
+  }
+
+  int bd[n]; // bd stores the burst time
+ 
+  for(int i=0;i<n;i++)
+  {
+    bd[i] = ready[i].st; // burst time changes so this bd[i] stores initial burst tie
+  }
+  cur_time = 0;
+ 
+  while(rem < n)  // main logiic here
+// other codes we keep i itself here rem juzz variablle name change 
+  {
+    pid = dispatcher(cur_time);  
+    ready[pid].ft = cur_time +1; // finish timee inc one
+    cur_time += 1;  // cur time inc 1
+    ready[pid].st -=1; // that burst time reduce 1
+   
+    if(ready[pid].st == 0) // if you  get it's burst time == 0
+    // then only rem increases so that loop ends
+    {
+      ready[pid].status = 1;
+      rem += 1;
+   
+   
+    }
+ 
+ 
+  }
+ 
+  printf("Process\tArrival Time\t Burst Time \t Finish Time");
+  printf("*******\t********\t*******\t******\n");
+ 
+  for(i = 0;i<n;i++)
+  {
+  printf("%d\t\t%d\t\t%d\t\t%d\n",i,ready[i].at,bd[i],ready[i].ft);
+  }
+ 
+
+}

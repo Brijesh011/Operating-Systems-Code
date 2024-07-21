@@ -1,0 +1,71 @@
+// shared memory
+// sender side shared memory
+
+// Compilation what sender sends is displayed in receiver 
+
+
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include<sys/types.h>
+#include<sys/ipc.h>
+#include<sys/shm.h>
+
+int main()
+{
+   char *shm,*s;    // char pointers
+   int shmid;
+   key_t key;
+   key = 5678;
+   
+   shmid = shmget(key,50,IPC_CREAT|0666); // create shared memory
+   //IPC_CREAT is just a flag tell the shared memory already created or not
+   // key is like a name if of the shared memory
+   
+   shm = (char*)shmat(shmid,NULL,0);
+   // attaching the program address to the shared memory
+   s = shm;
+   
+   printf("Enter the value");
+   scanf("%s",s);
+   
+   while (*shm != '*')
+   sleep(1);
+
+}
+
+
+// Shared memory client side
+
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+
+int main()
+{
+   int shmid;
+   char *s,*shm;
+   key_t key;
+   key = 5678;
+   
+   shmid = shmget(key,50,0666);   // shared memory got returns shmid
+   
+   shm = (char*)shmat(shmid,NULL,0); // attach the address
+   
+   for(s = shm;*s !='\0';s++)
+   putchar(*s);    // print the char
+   
+   *shm = '*';
+   exit(0);
+
+
+}
+
+

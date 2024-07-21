@@ -1,0 +1,160 @@
+#include <stdio.h>
+
+struct process{
+int at;
+int st;
+int ft;
+int status;
+}ready[10];
+int n,t,com = 0; // t time quantum , com = loop till all process completes 
+
+int Dispatcher(int ct) // current time
+{
+  int i,index = -1,highat = 0,highstatus = 0;
+  int m; // index of the process with lowest index number
+  m = n;
+ 
+  for(i=0;i<n;i++)
+  {
+ 
+  // check high at and high status
+  if(ready[i].at > highat)
+  {
+    highat = ready[i].at;
+ 
+  }
+ 
+  }
+ 
+  for(i = 0;i<n;i++)
+  {
+   if(ready[i].status > highstatus)
+   {
+     highstatus = ready[i].status;
+   }
+ 
+ 
+  }
+ 
+  for(i=0;i<n;i++)
+  {
+    if(ready[i].status != 2)
+    {
+      if(ready[i].at <=ct)
+      {
+      if(ready[i].at < highat){
+        index = i;
+        highat = ready[i].at;
+      }
+     
+      //if same arrival time
+      if(ready[i].at == highat)
+      {
+      if(ready[i].status < highstatus)
+      {
+        index = i;
+        highstatus = ready[i].status;
+     
+      }
+      else if(ready[i].status == highstatus)
+      {
+      if(i < m)
+      {
+      index = i;
+      m = i;
+     
+     
+      }
+     
+     
+     
+      }
+      }
+     
+     
+   
+   
+    }
+ 
+ 
+  }
+ 
+ 
+ 
+  }
+
+
+
+ return index;
+}
+
+int main()
+{
+  int i;
+  printf("Enter the no.of processes");
+  scanf("%d",&n);
+ 
+  printf("Enter the timequantum");
+  scanf("%d",&t);
+ 
+  for(i = 0;i<n;i++)
+  {
+   printf("Process: %d\n",i+1);
+   printf("***********\n");
+   
+   printf("Enter the arrival time");
+   scanf("%d",&ready[i].at);
+   
+   printf("Enter the service time");
+   scanf("%d",&ready[i].st);
+   
+   ready[i].status = 0;
+   }
+   
+   i= 0;
+   
+   int at[10],st[10];
+   
+   for(int i=0;i<n;i++)
+   {
+      at[i] = ready[i].at;
+      st[i] = ready[i].st;
+   }
+   
+   // Schedulling loop
+   
+   int pid,cur_time = 0;
+   while(com < n) // until all process completes
+   {
+    pid = Dispatcher(cur_time);
+    if(ready[pid].st <=t )  // burst time less
+    {
+      cur_time += ready[pid].st; // cur time inc
+      ready[pid].ft = cur_time; // ft for that pid
+      ready[pid].status = 2; // status
+      com ++; // one process completes
+   
+    }
+   
+    else
+    {
+      cur_time += t; // cur_time + whole time
+      ready[pid].at = cur_time; // goes to ready queue
+      ready[pid].st = ready[pid].st - t;
+      ready[pid].status = 1;
+     
+    }
+    }
+   
+    printf("processid\t AT\t ST\t FT\t TAT\t WAT\n");
+   
+    for(int i=0;i<n;i++)
+    {
+    printf("%d\t\t%d\t\t%d\t\t%d\t\t%d\t\t%d\n",i+1,at[i],st[i],ready[i].ft,ready[i].ft - at[i],(ready[i].ft-at[i]) -st[i]);
+   
+   
+    }
+    // pass the execution of prg wait for user input
+}
+
+
